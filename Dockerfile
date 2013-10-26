@@ -5,32 +5,30 @@ FROM ubuntu
 RUN echo 'deb http://archive.ubuntu.com/ubuntu precise main universe' > /etc/apt/sources.list.d/sources.list && \
     echo 'deb http://archive.ubuntu.com/ubuntu precise-updates universe' >> /etc/apt/sources.list.d/sources.list && \
     apt-get update
-#    echo 'deb http://get.docker.io/ubuntu docker main' > /etc/apt/sources.list.d/docker.list && \
-ENV DEBIAN_FRONTEND noninteractive
 
 #Prevent daemon start during install
 RUN	echo '#!/bin/sh\nexit 101' > /usr/sbin/policy-rc.d && \
     chmod +x /usr/sbin/policy-rc.d
 
 #Supervisord
-RUN apt-get install -y supervisor && \
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y supervisor && \
 	mkdir -p /var/log/supervisor
 CMD ["/usr/bin/supervisord", "-n"]
 
 #SSHD
-RUN apt-get install -y openssh-server && \
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-server && \
 	mkdir /var/run/sshd && \
 	echo 'root:root' |chpasswd
 
 #Utilities
-RUN apt-get install -y vim less ntp net-tools inetutils-ping curl git
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y vim less ntp net-tools inetutils-ping curl git telnet
 
 #Install Oracle Java 7
-RUN apt-get install -y python-software-properties && \
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-software-properties && \
     add-apt-repository ppa:webupd8team/java -y && \
-    apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get update && \
     echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections && \
-    apt-get install -y oracle-java7-installer
+    DEBIAN_FRONTEND=noninteractive apt-get install -y oracle-java7-installer
 
 #ElasticSearch
 RUN wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.90.5.tar.gz && \
@@ -43,15 +41,15 @@ RUN wget https://download.elasticsearch.org/kibana/kibana/kibana-3.0.0milestone4
     rm kibana-*.tar.gz
 
 #NGINX
-RUN apt-get install -y python-software-properties && \
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-software-properties && \
     add-apt-repository ppa:nginx/stable && \
     echo 'deb http://packages.dotdeb.org squeeze all' >> /etc/apt/sources.list && \
     curl http://www.dotdeb.org/dotdeb.gpg | apt-key add - && \
-    apt-get update && \
-    apt-get install -y nginx
+    DEBIAN_FRONTEND=noninteractive apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y nginx
 
 #Logstash
-RUN wget https://download.elasticsearch.org/logstash/logstash/logstash-1.2.1-flatjar.jar
+RUN wget https://download.elasticsearch.org/logstash/logstash/logstash-1.2.2-flatjar.jar
 
 #Configuration
 ADD ./ /docker-kibana
