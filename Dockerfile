@@ -24,21 +24,23 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-server && \
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y vim less ntp net-tools inetutils-ping curl git telnet
 
 #Install Oracle Java 7
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-software-properties && \
-    add-apt-repository ppa:webupd8team/java -y && \
-    DEBIAN_FRONTEND=noninteractive apt-get update && \
+RUN echo 'deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main' > /etc/apt/sources.list.d/java.list && \
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886 && \
+    apt-get update && \
     echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y oracle-java7-installer
 
 #ElasticSearch
-RUN wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.90.6.tar.gz && \
+RUN wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.90.7.tar.gz && \
     tar xf elasticsearch-*.tar.gz && \
-    rm elasticsearch-*.tar.gz
+    rm elasticsearch-*.tar.gz && \
+    mv elasticsearch-* elasticsearch
 
 #Kibana
 RUN wget https://download.elasticsearch.org/kibana/kibana/kibana-3.0.0milestone4.tar.gz && \
     tar xf kibana-*.tar.gz && \
-    rm kibana-*.tar.gz
+    rm kibana-*.tar.gz && \
+    mv kibana-* kibana
 
 #NGINX
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-software-properties && \
@@ -56,7 +58,7 @@ ADD ./ /docker-kibana
 RUN cd /docker-kibana && \
     mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.saved && \
     cp nginx.conf /etc/nginx/nginx.conf && \
-    sed -i -e 's|elasticsearch:.*|elasticsearch: "http://"+window.location.hostname + ":" + window.location.port,|' /kibana-3.0.0milestone4/config.js && \
+    sed -i -e 's|elasticsearch:.*|elasticsearch: "http://"+window.location.hostname + ":" + window.location.port,|' /kibana/config.js && \
     cp supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 
