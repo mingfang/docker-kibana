@@ -1,27 +1,19 @@
-#Kibana
-
-FROM ubuntu
+FROM ubuntu:14.04
  
-RUN echo 'deb http://archive.ubuntu.com/ubuntu precise main universe' > /etc/apt/sources.list && \
-    echo 'deb http://archive.ubuntu.com/ubuntu precise-updates universe' >> /etc/apt/sources.list && \
-    apt-get update
+RUN apt-get update
 
-#Prevent daemon start during install
-RUN	echo '#!/bin/sh\nexit 101' > /usr/sbin/policy-rc.d && \
-    chmod +x /usr/sbin/policy-rc.d
-
-#Supervisord
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y supervisor && \
-	mkdir -p /var/log/supervisor
-CMD ["/usr/bin/supervisord", "-n"]
+#Runit
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y runit 
+CMD /usr/sbin/runsvdir-start
 
 #SSHD
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-server && \
-	mkdir /var/run/sshd && \
-	echo 'root:root' |chpasswd
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-server &&	mkdir -p /var/run/sshd && \
+    echo 'root:root' |chpasswd
+RUN sed -i "s/session.*required.*pam_loginuid.so/#session    required     pam_loginuid.so/" /etc/pam.d/sshd
+RUN sed -i "s/PermitRootLogin without-password/#PermitRootLogin without-password/" /etc/ssh/sshd_config
 
 #Utilities
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y vim less ntp net-tools inetutils-ping curl git telnet
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y vim less net-tools inetutils-ping curl git telnet nmap socat dnsutils netcat tree htop unzip sudo software-properties-common
 
 #Install Oracle Java 7
 RUN echo 'deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main' > /etc/apt/sources.list.d/java.list && \
@@ -31,37 +23,27 @@ RUN echo 'deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main' > /
     DEBIAN_FRONTEND=noninteractive apt-get install -y oracle-java7-installer
 
 #ElasticSearch
-RUN wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.90.7.tar.gz && \
-    tar xf elasticsearch-*.tar.gz && \
-    rm elasticsearch-*.tar.gz && \
+RUN curl https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.2.0.tar.gz | tar xz && \
     mv elasticsearch-* elasticsearch
 
 #Kibana
-RUN wget https://download.elasticsearch.org/kibana/kibana/kibana-3.0.0milestone4.tar.gz && \
-    tar xf kibana-*.tar.gz && \
-    rm kibana-*.tar.gz && \
+RUN curl https://download.elasticsearch.org/kibana/kibana/kibana-3.1.0.tar.gz | tar xz && \
     mv kibana-* kibana
 
 #NGINX
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-software-properties && \
-    add-apt-repository ppa:nginx/stable && \
-    echo 'deb http://packages.dotdeb.org squeeze all' >> /etc/apt/sources.list && \
-    curl http://www.dotdeb.org/dotdeb.gpg | apt-key add - && \
-    DEBIAN_FRONTEND=noninteractive apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y nginx
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y nginx
 
 #Logstash
-RUN wget https://download.elasticsearch.org/logstash/logstash/logstash-1.2.2-flatjar.jar
+RUN curl https://download.elasticsearch.org/logstash/logstash/logstash-1.4.1.tar.gz | tar xz 
 #java -jar logstash-1.2.2-flatjar.jar agent -f docker-kibana/logstash.conf
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y libzmq-dev
 
+#Add runit services
+ADD sv /etc/service 
+
 #Configuration
-ADD ./ /docker-kibana
-RUN cd /docker-kibana && \
-    mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.saved && \
-    cp nginx.conf /etc/nginx/nginx.conf && \
-    sed -i -e 's|elasticsearch:.*|elasticsearch: "http://"+window.location.hostname + ":" + window.location.port,|' /kibana/config.js && \
-    cp supervisord-kibana.conf /etc/supervisor/conf.d
+ADD nginx.conf /etc/nginx/
+RUN sed -i -e 's|elasticsearch:.*|elasticsearch: "http://"+window.location.hostname + ":" + window.location.port,|' /kibana/config.js
 
 #80=ngnx, 9200=elasticsearch, 49021=logstash/zeromq
 EXPOSE 22 80 9200 49021
