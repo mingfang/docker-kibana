@@ -1,1 +1,1 @@
-docker build -t kibana .
+docker build $@ -t kibana .
