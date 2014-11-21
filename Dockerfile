@@ -23,18 +23,18 @@ RUN echo 'deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main' > /e
     DEBIAN_FRONTEND=noninteractive apt-get install -y oracle-java7-installer
 
 #ElasticSearch
-RUN curl https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.2.0.tar.gz | tar xz && \
+RUN curl https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.4.0.tar.gz | tar xz && \
     mv elasticsearch-* elasticsearch
 
 #Kibana
-RUN curl https://download.elasticsearch.org/kibana/kibana/kibana-3.1.0.tar.gz | tar xz && \
+RUN curl https://download.elasticsearch.org/kibana/kibana/kibana-3.1.2.tar.gz | tar xz && \
     mv kibana-* kibana
 
 #NGINX
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y nginx
 
 #Logstash
-RUN curl https://download.elasticsearch.org/logstash/logstash/logstash-1.4.1.tar.gz | tar xz 
+RUN curl https://download.elasticsearch.org/logstash/logstash/logstash-1.4.2.tar.gz | tar xz 
 #java -jar logstash-1.2.2-flatjar.jar agent -f docker-kibana/logstash.conf
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y libzmq-dev
 
