@@ -1,0 +1,9 @@
+#!/bin/sh
+
+sv start elasticsearch || exit 1
+
+source /etc/envvars
+env
+
+exec 2>&1
+exec /kibana/bin/kibana
