@@ -1,1 +1,1 @@
-docker run -d -p 80:80 -t kibana
+docker run -p 5601:5601 -d kibana
