@@ -1,4 +1,4 @@
 docker-kibana
 =============
 
-Run Kibana, ElasticSearch, Logstash, and Ngnix in Docker.
+Run Kibana, and ElasticSearch in Docker.
