@@ -1,1 +1,1 @@
-docker run -p 80:80 -i -t kibana /bin/bash
+docker run -p 80:80 -v `pwd`:/docker -w /docker --rm -it kibana /bin/bash
