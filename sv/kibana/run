@@ -5,5 +5,9 @@ sv start elasticsearch || exit 1
 source /etc/envvars
 env
 
+if [ ${ZOOKEEPER_HOST} ]; then
+  sed -i -e "s|elasticsearch_url:.*|elasticsearch_url: \"http://${ZOOKEEPER_HOST}:9200\"|" /kibana/config/kibana.yml
+fi
+
 exec 2>&1
 exec /kibana/bin/kibana
