@@ -6,7 +6,7 @@ source /etc/envvars
 env
 
 if [ ${ELASTICSEARCH_HOST} ]; then
-  sed -i -e "s|elasticsearch_url:.*|elasticsearch_url: \"http://${ELASTICSEARCH_HOST}:9200\"|" /kibana/config/kibana.yml
+  sed -i -e "s|# elasticsearch.url:.*|elasticsearch_url: \"http://${ELASTICSEARCH_HOST}:9200\"|" /kibana/config/kibana.yml
 fi
 
 exec 2>&1
