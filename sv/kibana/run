@@ -3,7 +3,8 @@
 #sv start elasticsearch || exit 1
 
 source /etc/envvars
-env
+
+export NODE_ENV=production
 
 if [ ${ELASTICSEARCH_HOST} ]; then
   sed -i -e "s|# elasticsearch.url:.*|elasticsearch_url: \"http://${ELASTICSEARCH_HOST}:9200\"|" /kibana/config/kibana.yml
