@@ -16,7 +16,7 @@ RUN echo 'export > /etc/envvars' >> /root/.bashrc
 RUN apt-get install -y --no-install-recommends vim less net-tools inetutils-ping wget curl git telnet nmap socat dnsutils netcat tree htop unzip sudo software-properties-common jq psmisc iproute
 
 #Kibana
-RUN wget -O - https://download.elastic.co/kibana/kibana/kibana-4.5.4-linux-x64.tar.gz | tar xz && \
+RUN wget -O - https://download.elastic.co/kibana/kibana/kibana-4.6.0-linux-x86_64.tar.gz | tar xz && \
     mv kibana-* kibana
 
 # Add runit services
