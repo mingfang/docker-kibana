@@ -17,7 +17,7 @@ CMD bash -c 'export > /etc/envvars && /usr/sbin/runsvdir-start'
 RUN apt-get install -y --no-install-recommends vim less net-tools inetutils-ping wget curl git telnet nmap socat dnsutils netcat tree htop unzip sudo software-properties-common jq psmisc iproute python ssh rsync gettext-base
 
 #Kibana
-RUN wget -O - https://artifacts.elastic.co/downloads/kibana/kibana-5.6.1-linux-x86_64.tar.gz | tar xz && \
+RUN wget -O - https://artifacts.elastic.co/downloads/kibana/kibana-6.0.0-linux-x86_64.tar.gz | tar xz && \
     mv kibana-* kibana
 
 COPY kibana.yml /kibana/config/kibana.yml
