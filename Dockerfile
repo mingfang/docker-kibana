@@ -20,7 +20,11 @@ RUN apt-get install -y --no-install-recommends vim less net-tools inetutils-ping
 RUN wget -O - https://artifacts.elastic.co/downloads/kibana/kibana-6.0.1-linux-x86_64.tar.gz | tar xz && \
     mv kibana-* kibana
 
+#Logtrail
+RUN /kibana/bin/kibana-plugin install https://github.com/sivasamyk/logtrail/releases/download/v0.1.23/logtrail-6.0.1-0.1.23.zip
+
 COPY kibana.yml /kibana/config/kibana.yml
+COPY logtrail.json /kibana/plugins/logtrail/logtrail.json
 
 # Add runit services
 COPY sv /etc/service 
