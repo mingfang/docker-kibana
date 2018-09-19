@@ -17,13 +17,13 @@ CMD bash -c 'export > /etc/envvars && /usr/sbin/runsvdir-start'
 RUN apt-get install -y --no-install-recommends vim less net-tools inetutils-ping wget curl git telnet nmap socat dnsutils netcat tree htop unzip sudo software-properties-common jq psmisc iproute python ssh rsync gettext-base
 
 #Kibana
-RUN wget -O - https://artifacts.elastic.co/downloads/kibana/kibana-6.2.3-linux-x86_64.tar.gz | tar xz && \
+RUN wget -O - https://artifacts.elastic.co/downloads/kibana/kibana-6.3.2-linux-x86_64.tar.gz | tar xz && \
     mv kibana-* kibana
 
 #Logtrail
-RUN /kibana/bin/kibana-plugin install https://github.com/sivasamyk/logtrail/releases/download/v0.1.27/logtrail-6.2.3-0.1.27.zip
+RUN /kibana/bin/kibana-plugin install https://github.com/sivasamyk/logtrail/releases/download/v0.1.29/logtrail-6.3.2-0.1.29.zip
 
-COPY kibana.yml /kibana/config/kibana.yml
+#COPY kibana.yml /kibana/config/kibana.yml
 COPY logtrail.json /kibana/plugins/logtrail/logtrail.json
 
 # Add runit services
